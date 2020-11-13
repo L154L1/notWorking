@@ -226,7 +226,7 @@ public class FastSkiplistRankedSSet<T> implements RankedSSet<T> {
 
 
 	public boolean remove(T x){		// my version
-		System.out.println("\nremove x has been called for x= " + (int)x);
+		System.out.println("\nremove x has been called for x=" + (int)x);
 		// find index where x is
 		if(x == null){
 			return false;
@@ -260,8 +260,8 @@ public class FastSkiplistRankedSSet<T> implements RankedSSet<T> {
 		}
 
 		int toSee = i+1;
-		System.out.println("\ti+1 is " + toSee + "after search path loop");
-		System.out.println("\tsize is " + n + "after search path loop");
+		System.out.println("\ti+1 is " + toSee + " after search path loop");
+		System.out.println("\tsize is " + n + " after search path loop");
 
 		if(i == -1 && sentinel.next[0] != null && sentinel.next[0].x != x){
 			System.out.println("something is wrong i cant remove this because it is not within the bounds of the list or the list is empty");
@@ -272,8 +272,8 @@ public class FastSkiplistRankedSSet<T> implements RankedSSet<T> {
 		}
 		// call remove(index i)
 
-		System.out.println("\ti+1 is " + toSee + "at end of remove x");
-		System.out.println("\tsize is " + n + "at end of remove x");
+		System.out.println("\ti+1 is " + toSee + " at end of remove x");
+		System.out.println("\tsize is " + n + " at end of remove x");
 		remove(i+1);
 		return true;
 	}
@@ -302,7 +302,7 @@ public class FastSkiplistRankedSSet<T> implements RankedSSet<T> {
         }
 		n--;
 		
-		System.out.println("\tsize is " + n + "at end of remove i");
+		System.out.println("\tsize is " + n + " at end of remove i");
         return x;
     }
 
@@ -432,8 +432,8 @@ public class FastSkiplistRankedSSet<T> implements RankedSSet<T> {
 		}
 
 		int toSee = i+1;
-		System.out.println("\ti+1 is " + toSee + "after search path loop");
-		System.out.println("\tsize is " + n + "after search path loop");
+		System.out.println("\ti+1 is " + toSee + " after search path loop");
+		System.out.println("\tsize is " + n + " after search path loop");
 
 		if(u.next[0] != null && c.compare(u.next[0].x, x) == 0){   // to prevent adding repeats
 			System.out.println("something is wrong i cant add this because it is already in the list");
@@ -445,8 +445,8 @@ public class FastSkiplistRankedSSet<T> implements RankedSSet<T> {
             h = w.height();
 		}
 		
-		System.out.println("\ti+1 is " + toSee +"at end of add x");
-		System.out.println("\tsize is " + n + "at end of add x");
+		System.out.println("\ti+1 is " + toSee +" at end of add x");
+		System.out.println("\tsize is " + n + " at end of add x");
 
 
         add(i+1, w);
@@ -454,7 +454,7 @@ public class FastSkiplistRankedSSet<T> implements RankedSSet<T> {
 	}
 
 	public Node<T> add(int i, Node<T> w) {
-		System.out.println("add i has been called for i= " + i);
+		System.out.println("add i has been called for i=" + i);
 		Node<T> u = sentinel;
 		int k = w.height();
 		int r = h;
@@ -475,7 +475,7 @@ public class FastSkiplistRankedSSet<T> implements RankedSSet<T> {
 		}
 		n++;
 
-		System.out.println("\tsize is " + n + "at end of add i");
+		System.out.println("\tsize is " + n + " at end of add i");
 		return u;
 	}
 
