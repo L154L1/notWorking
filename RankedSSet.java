@@ -32,4 +32,6 @@ public interface RankedSSet<T> extends SSet<T> {
 	 * @return the number of elements smaller than x
 	 */
 	public int rank(T x);
+
+	public void display();
 }
