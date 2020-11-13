@@ -20,6 +20,7 @@ public class FastSkiplistRankedSSet<T> implements RankedSSet<T> {
 	protected static class Node<T> {
 		T x;
 		Node<T>[] next;
+
 		int[] length;
 		public Node(T ix, int h) {
 			x = ix;
@@ -85,6 +86,7 @@ public class FastSkiplistRankedSSet<T> implements RankedSSet<T> {
 			while (u.next[r] != null && c.compare(u.next[r].x,x) < 0)
 				u = u.next[r];   // go right in list r
 			r--;               // go down into list r-1
+
 		}
 		return u;
 	}
@@ -118,6 +120,13 @@ public class FastSkiplistRankedSSet<T> implements RankedSSet<T> {
 	}
 
 	public T find(T x) {
+		Node<T> test = sentinel;
+
+		
+
+		// if x is the last thing in the list, return itself's value
+		// if x is larger than the last value in the list, return null
+
 		Node<T> u = findPredNode(x);
 		return u.next[0] == null ? null : u.next[0].x;
 	}
@@ -186,36 +195,7 @@ public class FastSkiplistRankedSSet<T> implements RankedSSet<T> {
 	}
 
 
-	public boolean remove(T x){		// my version
-		// find index where x is
-		if(x == null){
-			return false;
-		}
 
-		Node<T> u = sentinel;	// which node we are at rn
-		//int k = // height of node trying to add
-		// int j = -1 // sentinel's index is -1
-        int i = -1;
-		int r = h;
-		
-
-        // while (u.next[0] != null && c.compare(u.next[0].x, x) < 0){ // to find where x is supposed to go - which is i // TOO SLOW
-        //     i++;
-        //     u = u.next[0];
-		// }
-		
-
-		while(r>=0){
-			while(u.next[r] != null && c.compare(u.next[r].x,x) < 0){
-				i += u.length[r];
-				u = u.next[r];
-			}
-			r--;
-		}
-		// call remove(index i)
-		remove(i);
-		return true;
-	}
 
 
 	public boolean remove2(T x) {		// provided with code version
@@ -245,28 +225,83 @@ public class FastSkiplistRankedSSet<T> implements RankedSSet<T> {
 	}
 
 
-	T remove(int i) {
-		T x = null;
-		Node<T> u = sentinel;
+	public boolean remove(T x){		// my version
+		System.out.println("remove x has been called");
+		// find index where x is
+		if(x == null){
+			return false;
+		}
+
+		if (sentinel.next[0] == null){			// if list is empty, exit
+			System.out.println("Something is wrong this list is empty cannot remove");
+			return false;
+		}
+
+		Node<T> u = sentinel;	// which node we are at rn
+		//int k = // height of node trying to add
+		// int j = -1 // sentinel's index is -1
+        int i = -1;
 		int r = h;
-		int j = -1;	// index of node u
-		while (r >= 0) {
-			while (u.next[r] != null && j + u.length[r] < i) {
-				j += u.length[r];
+		
+		// if x isnt in the list, need to exit
+
+        // while (u.next[0] != null && c.compare(u.next[0].x, x) < 0){ // to find where x is supposed to go - which is i // TOO SLOW
+        //     i++;
+        //     u = u.next[0];
+		// }
+		
+
+		while(r>=0){
+			while(u.next[r] != null && c.compare(u.next[r].x,x) < 0){
+				i += u.length[r];
 				u = u.next[r];
-			}
-			u.length[r]--; // for the node we are removing
-			if (j + u.length[r] + 1 == i && u.next[r] != null) {
-				x = u.next[r].x;
-				u.length[r] += u.next[r].length[r];
-				u.next[r] = u.next[r].next[r];
-				if (u == sentinel && u.next[r] == null) h--;
 			}
 			r--;
 		}
-		n--;
-		return x;
-	}	
+
+		int toSee = i+1;
+		System.out.println("\ti+1 is " + toSee);
+		System.out.println("\tn is " + n);
+
+		if(i == -1 && sentinel.next[0] != null && sentinel.next[0].x != x){
+			System.out.println("something is wrong i cant remove this because it is not within the bounds of the list or the list is empty");
+			return false;
+		} else if (i+1>=n){
+			System.out.println("something is wrong i cant remove this because it is past the list");
+			return false;
+		}
+		// call remove(index i)
+		remove(i+1);
+		return true;
+	}
+
+
+    T remove(int i) {
+		System.out.println("remove i has been called for i=" + i);
+        T x = null;
+        Node<T> u = sentinel;
+        int r = h;
+        int j = -1; // index of node u
+        while (r >= 0) {
+            while (u.next[r] != null && j+u.length[r] < i) {
+                j += u.length[r];
+                u = u.next[r];
+            }
+            u.length[r]--;  // for the node we are removing
+            if (j + u.length[r] + 1 == i && u.next[r] != null) {
+                x = u.next[r].x;
+                u.length[r] += u.next[r].length[r];
+                u.next[r] = u.next[r].next[r];
+                if (u == sentinel && u.next[r] == null)
+                    h--;
+            }
+            r--;
+        }
+        n--;
+        return x;
+    }
+
+
 
 
 
@@ -373,7 +408,7 @@ public class FastSkiplistRankedSSet<T> implements RankedSSet<T> {
 		// int j = -1 // sentinel's index is -1
         int i = -1;
 		int r = h;
-		
+		// print what add.next is
 
         // while (u.next[0] != null && c.compare(u.next[0].x, x) < 0){ // to find where x is supposed to go - which is i // TOO SLOW
         //     i++;
@@ -435,73 +470,74 @@ public class FastSkiplistRankedSSet<T> implements RankedSSet<T> {
 	}
 
 
-	public void display(){
-		System.out.println("\nPRINTING...");
-		Node<T> u = sentinel;
+	// public void display(){
+	// 	System.out.println("\nPRINTING...");
+	// 	Node<T> u = sentinel;
 
-		for(int i = h; i>=0; i--){						// at height h
-			System.out.print("*_");		// sentinel
-			for(int j = 0; j<=n; j++){					// for all elements of list number of times
-				if (u.next.length < i){					// if nothing in the next array at this height for this element, print _
-					System.out.print("__");
-				} else{	
-					if(u.x != null){								// if something, print *
-						System.out.print((int)u.x);
-						System.out.print("_");		
-					// System.out.print("*_");
-					}
-				}
-				u = u.next[0];
-			}
-			System.out.println("");
-			u = sentinel;
-		}
-		System.out.println("");
-	}
+	// 	for(int i = h; i>=0; i--){						// at height h
+	// 		System.out.print("*_");		// sentinel
+	// 		for(int j = 0; j<=n; j++){					// for all elements of list number of times
+	// 			if (u.next.length < i){					// if nothing in the next array at this height for this element, print _
+	// 				System.out.print("__");
+	// 			} else{	
+	// 				if(u.x != null){								// if something, print *
+	// 					System.out.print((int)u.x);
+	// 					System.out.print("_");		
+	// 				// System.out.print("*_");
+	// 				}
+	// 			}
+	// 			u = u.next[0];
+	// 		}
+	// 		System.out.println("");
+	// 		u = sentinel;
+	// 	}
+	// 	System.out.println("");
+	// }
 
 	public static void main(String[] args) {
-		
-		int n = 10;
 
-		// Random rand = new java.util.Random();
 		RankedSSet<Integer> rss = new FastSkiplistRankedSSet<>();
-		// for (int i = 0; i < n; i++) {
-		// 	rss.add(rand.nextInt(3*n));
-		
-			
-		// }
 
 		System.out.println("STARTING WITH PHASE 1:");
-
+		System.out.println("in the beginning: size()=" + rss.size());
 		rss.add(3);
+		System.out.println("after adding 3: size()=" + rss.size());
 		rss.add(17);
+		System.out.println("after adding 17: size()=" + rss.size());
 		rss.add(8);
+		System.out.println("after adding 8: size()=" + rss.size());
 		rss.add(10);
+		System.out.println("after adding 10: size()=" + rss.size());
 		rss.add(11);
+		System.out.println("after adding 11: size()=" + rss.size());
 		rss.add(16);
+		System.out.println("after adding 16: size()=" + rss.size());
 		rss.add(7);
+		System.out.println("after adding 7: size()=" + rss.size());
 		rss.add(12);
+		System.out.println("after adding 12: size()=" + rss.size());
 
-		rss.display();
+		//rss.display();
 
 		System.out.println("AFTERWARDS:");
 		System.out.print("Contents: ");
 		for (Integer x : rss) {
-			if(x == null){
-				System.out.println("null got added");
-			}
 			System.out.print(x + ",");
 		}
-		System.out.println();
-		System.out.println("size()=" + rss.size());
+		System.out.println("\nsize()=" + rss.size());
 
 		for (int i = 0; i < rss.size(); i++) {
 			Integer x = rss.get(i);
 			System.out.println("get(" + i + ")=" + x);
 		}
 
-		for (Integer x : rss) {
-			System.out.print(find(x)+ ",");
+		
+		System.out.println("find(1000)=" + rss.find(1000));
+		System.out.println("find(18)=" + rss.find(18));
+
+		System.out.println("finding every element in rss: ");
+		for (int x = 0; x < 20; x++) {
+			System.out.println("find(" + x + ")=" + rss.find(x));
 		}
 
 		for (Integer x = 0; x < 20; x++) {
@@ -518,28 +554,43 @@ public class FastSkiplistRankedSSet<T> implements RankedSSet<T> {
 
 		System.out.println("\nSTARTING WITH PHASE 2:");
 		rss.remove(8);
-		// rss.remove(3);
-		// rss.add(14);
-		// rss.remove(17);
+		System.out.println("after removing 8: size()=" + rss.size());
+		rss.remove(3);
+		System.out.println("after removing 3: size()=" + rss.size());
+		rss.add(14);
+		System.out.println("after adding 14: size()=" + rss.size());
+		rss.remove(11);
+		System.out.println("after removing 11: size()=" + rss.size());
+		rss.remove(5);
+		System.out.println("after removing 5: size()=" + rss.size());
+		rss.remove(17);
+		System.out.println("after removing 17: size()=" + rss.size());
+		rss.remove(50);
+		System.out.println("after removing 50: size()=" + rss.size());
+		rss.remove(-11);
 
 
-
-		rss.display();
+		//rss.display();
 
 		System.out.println("AFTERWARDS:");
 		System.out.print("Contents: ");
 		for (Integer x : rss) {
-			if(x == null){
-				System.out.println("null got added");
-			}
 			System.out.print(x + ",");
 		}
-		System.out.println();
-		System.out.println("size()=" + rss.size());
+		System.out.println("\nsize()=" + rss.size());
 
 		for (int i = 0; i < rss.size(); i++) {
 			Integer x = rss.get(i);
 			System.out.println("get(" + i + ")=" + x);
+		}
+
+		
+		System.out.println("find(1000)=" + rss.find(1000));
+		System.out.println("find(18)=" + rss.find(18));
+
+		System.out.println("finding every element in rss: ");
+		for (int x = 0; x < 20; x++) {
+			System.out.println("find(" + x + ")=" + rss.find(x));
 		}
 
 		for (Integer x = 0; x < 20; x++) {
@@ -548,47 +599,11 @@ public class FastSkiplistRankedSSet<T> implements RankedSSet<T> {
 			System.out.println("rank(" + x + ")=" + i);
 		}
 
-		// System.out.println("get(5)=" + rss.get(5));
-		// System.out.println("rank(34)=" + rss.rank(34));
-		// System.out.println("rank(null)=" + rss.rank(null));
-		// System.out.println("get(-3)=" + rss.get(-3));
-		// System.out.println("rank(-3)=" + rss.rank(-3));
 
 
 
-		// rss.remove(4);
-		// rss.add(83);
-		// rss.add(3);
-		// rss.remove(3);
-		// rss.add(15);
-
-		// rss.display();
-		// System.out.println("rank(5)=" + rss.rank(5));
-		// System.out.println("get(5)=" + rss.get(5));
-		// System.out.println("get(-6)=" + rss.get(-6));
-
-		// rss.add(71);
-		// rss.remove(23);
-		// rss.add(15);
-		// rss.add(8);
-		// rss.remove(-1);
-		// rss.add(null);
-		// rss.remove(null);
-
-
-		// rss.display();
-		// System.out.println("get(-3)=" + rss.get(-3));
-		// System.out.println("get(5)=" + rss.get(5));
-		// System.out.println("rank(-3)=" + rss.rank(-3));
-		// System.out.println("rank(null)=" + rss.rank(null));
-		// System.out.println("rank(3)=" + rss.rank(3));
 
 		
-
-
-
-
-
 
 		// for (Integer x = 0; x < 3*n+1; x++) {
 		// 	int i = rss.rank(x);
@@ -598,4 +613,6 @@ public class FastSkiplistRankedSSet<T> implements RankedSSet<T> {
 
 
 	}
+
+
 }
